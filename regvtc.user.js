@@ -15,9 +15,10 @@
   const date = '03/03/2025';
   const hour = '12:00';
   const matricula = '7925-MYN';
-  const delay = 1000;
+  const delay = 500;
 
   const sleep = (delay) => new Promise(resolve => setTimeout(resolve, delay));
+  const clickContinuar = () => [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Continuar')?.click();
 
   function dispatchAngularEvents(el) {
     let ev;
@@ -35,26 +36,17 @@
   }
 
   function setValueIfNeeded(el, value) {
-    if (!el) return false;
-    if (el.value === value) return false;
+    if (!el || el.value === value) return false;
 
     el.value = value;
     dispatchAngularEvents(el);
     return true;
   }
-
-  function clickContinuar() {
-    [...document.querySelectorAll('button')]
-      .find(b => b.textContent.trim() === 'Continuar')
-      ?.click();
-  }
-
+  
   function getActiveStepIndex() {
     const steps = [...document.querySelectorAll('.mat-horizontal-stepper-content')];
     if (!steps.length) return -1;
-
-    const step = steps.find(s => s.ariaExpanded === 'true');
-    return steps.indexOf(step);
+    return steps.indexOf(steps.find(step => step.ariaExpanded === 'true'));
   }
 
   async function processSteps() {
