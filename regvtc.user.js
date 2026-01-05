@@ -11,7 +11,7 @@
 
 (function () {
   'use strict';
-//
+
   /* ================= CONFIG ================= */
 
   const TARGET_DATE = '03/03/2025';
@@ -20,6 +20,9 @@
   const DELAY = 500;
 
   /* ================= UTILIDADES ================= */
+
+  const sleep = (delay) =>
+    new Promise(resolve => setTimeout(resolve, delay));
 
   function dispatchAngularEvents(el) {
     let ev;
@@ -59,7 +62,7 @@
 
   /* ================= LÓGICA PRINCIPAL ================= */
 
-  function processSteps() {
+  async function processSteps() {
     let changed = false;
 
     // Paso matrícula
@@ -67,7 +70,8 @@
     if (matricula && isStepExpanded(matricula)) {
       changed = setValueIfNeeded(matricula, TARGET_MATRICULA);
       if (changed) {
-        setTimeout(clickContinuar, DELAY);
+        await sleep(DELAY);
+        clickContinuar();
       }
       return;
     }
@@ -78,17 +82,21 @@
 
     if (date && hour && isStepExpanded(date) && isStepExpanded(hour)) {
       changed = setValueIfNeeded(date, TARGET_DATE) || changed;
+      await sleep(DELAY);
       changed = setValueIfNeeded(hour, TARGET_HOUR) || changed;
 
       if (changed) {
-        setTimeout(clickContinuar, DELAY);
+        await sleep(DELAY);
+        clickContinuar();
       }
     }
   }
 
   /* ================= OBSERVER ================= */
 
-  const observer = new MutationObserver(processSteps);
+  const observer = new MutationObserver(() => {
+    processSteps();
+  });
 
   observer.observe(document.body, {
     childList: true,
