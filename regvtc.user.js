@@ -44,20 +44,29 @@
   }
 
   function clickContinuar() {
-    [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Continuar')?.click();
+    [...document.querySelectorAll('button')]
+      .find(b => b.textContent.trim() === 'Continuar')
+      ?.click();
   }
 
-  function isStepExpanded(el) {
-    const step = el.closest('.mat-horizontal-stepper-content');
-    return step && step.ariaExpanded === 'true';
+  function getActiveStepIndex() {
+    const steps = [...document.querySelectorAll('.mat-horizontal-stepper-content')];
+    if (!steps.length) return -1;
+
+    const step = steps.find(s => s.ariaExpanded === 'true');
+    return steps.indexOf(step);
   }
 
   async function processSteps() {
     let changed = false;
+    const stepIndex = getActiveStepIndex();
 
-    const matriculaInput = document.getElementById('desc_MATRICULA');
-    if (matriculaInput && isStepExpanded(matriculaInput)) {
+    if (stepIndex === -1) return;
+
+    if (stepIndex === 0) {
+      const matriculaInput = document.getElementById('desc_MATRICULA');
       changed = setValueIfNeeded(matriculaInput, matricula);
+
       if (changed) {
         await sleep(delay);
         clickContinuar();
@@ -66,13 +75,13 @@
       return;
     }
 
-    const dateInput = document.getElementById('F_CONTRATO_DATE');
-    const hourInput = document.getElementById('F_CONTRATO_HOUR');
+    if (stepIndex === 1) {
+      const dateInput = document.getElementById('F_CONTRATO_DATE');
+      const hourInput = document.getElementById('F_CONTRATO_HOUR');
 
-    if (dateInput && isStepExpanded(dateInput)) {
       changed = setValueIfNeeded(dateInput, date) || changed;
       if (changed) await sleep(delay);
-	  
+
       changed = setValueIfNeeded(hourInput, hour) || changed;
       if (changed) {
         await sleep(delay);
