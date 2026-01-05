@@ -12,21 +12,15 @@
 (function () {
   'use strict';
 
-  /* ================= CONFIG ================= */
+  const date = '03/03/2025';
+  const hour = '12:00';
+  const matricula = '7925-MYN';
+  const delay = 1000;
 
-  const TARGET_DATE = '03/03/2025';
-  const TARGET_HOUR = '12:00';
-  const TARGET_MATRICULA = '7925-MYN';
-  const DELAY = 500;
-
-  /* ================= UTILIDADES ================= */
-
-  const sleep = (delay) =>
-    new Promise(resolve => setTimeout(resolve, delay));
+  const sleep = (delay) => new Promise(resolve => setTimeout(resolve, delay));
 
   function dispatchAngularEvents(el) {
     let ev;
-
     ev = document.createEvent('HTMLEvents');
     ev.initEvent('input', true, true);
     el.dispatchEvent(ev);
@@ -50,9 +44,7 @@
   }
 
   function clickContinuar() {
-    const btn = [...document.querySelectorAll('button')]
-      .find(b => b.textContent.trim() === 'Continuar');
-    if (btn) btn.click();
+    [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Continuar')?.click();
   }
 
   function isStepExpanded(el) {
@@ -60,43 +52,38 @@
     return step && step.ariaExpanded === 'true';
   }
 
-  /* ================= LÓGICA PRINCIPAL ================= */
-
   async function processSteps() {
     let changed = false;
 
-    // Paso matrícula
-    const matricula = document.getElementById('desc_MATRICULA');
-    if (matricula && isStepExpanded(matricula)) {
-      changed = setValueIfNeeded(matricula, TARGET_MATRICULA);
+    const matriculaInput = document.getElementById('desc_MATRICULA');
+    if (matriculaInput && isStepExpanded(matriculaInput)) {
+      changed = setValueIfNeeded(matriculaInput, matricula);
       if (changed) {
-        await sleep(DELAY);
+        await sleep(delay);
         clickContinuar();
+        await sleep(delay);
       }
       return;
     }
 
-    // Paso fecha / hora
-    const date = document.getElementById('F_CONTRATO_DATE');
-    const hour = document.getElementById('F_CONTRATO_HOUR');
+    const dateInput = document.getElementById('F_CONTRATO_DATE');
+    const hourInput = document.getElementById('F_CONTRATO_HOUR');
 
-    if (date && hour && isStepExpanded(date) && isStepExpanded(hour)) {
-      changed = setValueIfNeeded(date, TARGET_DATE) || changed;
-      await sleep(DELAY);
-      changed = setValueIfNeeded(hour, TARGET_HOUR) || changed;
-
+    if (dateInput && isStepExpanded(dateInput)) {
+      changed = setValueIfNeeded(dateInput, date) || changed;
+      if (changed) await sleep(delay);
+	  
+      changed = setValueIfNeeded(hourInput, hour) || changed;
       if (changed) {
-        await sleep(DELAY);
+        await sleep(delay);
+        hourInput.focus();
+        await sleep(delay);
         clickContinuar();
       }
     }
   }
 
-  /* ================= OBSERVER ================= */
-
-  const observer = new MutationObserver(() => {
-    processSteps();
-  });
+  const observer = new MutationObserver(processSteps);
 
   observer.observe(document.body, {
     childList: true,
