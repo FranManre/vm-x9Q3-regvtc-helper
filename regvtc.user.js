@@ -20,19 +20,14 @@
   const sleep = (delay) => new Promise(resolve => setTimeout(resolve, delay));
   const clickContinuar = () => [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Continuar')?.click();
 
+  const eventTypes = ['input', 'keyup', 'change'];
   function dispatchAngularEvents(el) {
     let ev;
-    ev = document.createEvent('HTMLEvents');
-    ev.initEvent('input', true, true);
-    el.dispatchEvent(ev);
-
-    ev = document.createEvent('HTMLEvents');
-    ev.initEvent('keyup', true, true);
-    el.dispatchEvent(ev);
-
-    ev = document.createEvent('HTMLEvents');
-    ev.initEvent('change', true, true);
-    el.dispatchEvent(ev);
+    eventTypes.forEach((type) => {
+      ev = document.createEvent('HTMLEvents');
+      ev.initEvent(type, true, true);
+      el.dispatchEvent(ev);
+    });
   }
 
   function setValueIfNeeded(el, value) {
