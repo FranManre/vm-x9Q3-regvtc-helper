@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Auto contrato (fecha, hora, matrícula)
 // @namespace    https://github.com/FranManre/vm-x9Q3-regvtc-helper
-// @version      0.1.0
+// @version      0.0.1
 // @description  Autocompleta matrícula, fecha y hora en REGVTC
 // @match        https://sede.transportes.gob.es/regvtc/gestion/*
 // @grant        none
