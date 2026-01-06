@@ -40,6 +40,7 @@
 
   /* ================= UTILIDADES ================= */
 
+  const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
   const sleep = (delay) => new Promise(resolve => setTimeout(resolve, delay));
 
   const clickContinuar = () =>
@@ -199,6 +200,12 @@
           document.querySelector('mat-list-item')?.click();
           municipioSelected = true;
           await sleep(delay);
+        }
+        
+        if (addressInput && addressInput.value === '') {
+          addressInput.value = domiInicioOptions[randomInt(0, 9)];
+          await sleep(delay);
+          dispatchAngularEvents(addressInput);
         }
       }
     } finally {
