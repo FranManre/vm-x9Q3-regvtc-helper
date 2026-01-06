@@ -5,8 +5,8 @@
 // @description  Autocompleta matrícula, fecha, hora y dirección en REGVTC
 // @match        https://sede.transportes.gob.es/regvtc/gestion/*
 // @grant        none
-// @updateURL    https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc.user.js
-// @downloadURL  https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc.user.js
+// @updateURL    https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc2.user.js
+// @downloadURL  https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc2.user.js
 // ==/UserScript==
 
 (function () {
