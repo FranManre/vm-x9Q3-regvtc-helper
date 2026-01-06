@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         Auto contrato (fecha, hora, matrícula, domicilio)
+// @name         Auto contrato 2
 // @namespace    https://github.com/FranManre/vm-x9Q3-regvtc-helper
-// @version      0.1.0
-// @description  Autocompleta flujo REGVTC
+// @version      0.0.1
+// @description  Autocompleta matrícula, fecha, hora y dirección en REGVTC
 // @match        https://sede.transportes.gob.es/regvtc/gestion/*
 // @grant        none
+// @updateURL    https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc2.user.js
+// @downloadURL  https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc2.user.js
 // ==/UserScript==
 
 (function () {
@@ -144,8 +146,7 @@
       const stepIndex = getActiveStepIndex();
       if (stepIndex === -1) return;
 
-      /* ===== STEP 0: MATRÍCULA ===== */
-
+      // STEP 0: MATRÍCULA
       if (stepIndex === 0) {
         const matriculaInput = document.getElementById('desc_MATRICULA');
         if (setValueIfNeeded(matriculaInput, matricula)) {
@@ -155,8 +156,7 @@
         return;
       }
 
-      /* ===== STEP 1: FECHA / HORA ===== */
-
+      // STEP 1: FECHA / HORA
       if (stepIndex === 1) {
         const dateInput = document.getElementById('F_CONTRATO_DATE');
         const hourInput = document.getElementById('F_CONTRATO_HOUR');
@@ -174,15 +174,11 @@
         return;
       }
 
-      /* ===== STEP 2: DOMICILIO ===== */
-
+      // STEP 2: DOMICILIO
       if (stepIndex === 2) {
-
         const addressInput = document.getElementById('DOMI_INICIO');
         if (addressInput && !addressInput._vmAutocompleteAttached) {
           initAddressAutocomplete(addressInput);
-
-          // nuevo formulario → reset flags
           municipioSelectorOpened = false;
           municipioSelected = false;
         }
@@ -200,13 +196,11 @@
           termInput.value = 'SESEÑA (TOLEDO)';
           dispatchAngularEvents(termInput);
           await sleep(delay);
-
           document.querySelector('mat-list-item')?.click();
           municipioSelected = true;
           await sleep(delay);
         }
       }
-
     } finally {
       isProcessing = false;
     }
