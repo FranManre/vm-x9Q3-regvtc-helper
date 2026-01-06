@@ -188,7 +188,6 @@
         if (muniInput && muniInput.value !== 'SESEÑA' && !municipioSelectorOpened) {
           municipioSelectorOpened = true;
           muniInput.click();
-          //await sleep(delay);
           return;
         }
 
