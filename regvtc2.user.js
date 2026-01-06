@@ -181,7 +181,7 @@
         dispatchAngularEvents(termInput);
         await sleep(delay);
         document.querySelector('mat-list-item')?.click();
-        await sleep(delay);
+        await sleep(delay*5);
       }
     }
   }
