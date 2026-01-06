@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Auto contrato (fecha, hora, matrícula)
+// @name         Auto contrato 2
 // @namespace    https://github.com/FranManre/vm-x9Q3-regvtc-helper
 // @version      0.0.1
 // @description  Autocompleta matrícula, fecha, hora y dirección en REGVTC
