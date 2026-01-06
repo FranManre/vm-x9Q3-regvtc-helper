@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         Auto contrato 2 (fecha, hora, matrícula)
+// @name         Auto contrato (fecha, hora, matrícula y dirección)
 // @namespace    https://github.com/FranManre/vm-x9Q3-regvtc-helper
-// @version      0.0.1
-// @description  Autocompleta matrícula, fecha, hora y dirección en REGVTC
+// @version      0.0.2
+// @description  Autocompleta matrícula, fecha, hora y dirección en REGVTC con scroll en móvil
 // @match        https://sede.transportes.gob.es/regvtc/gestion/*
 // @grant        none
-// @updateURL    https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc2.user.js
-// @downloadURL  https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc2.user.js
+// @updateURL    https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc.user.js
+// @downloadURL  https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc.user.js
 // ==/UserScript==
 
 (function () {
@@ -18,16 +18,16 @@
   const delay = 500;
 
   const domiInicioOptions = [
-    'PLAZA BAYONA 1, 45223',
-    'CALLE LOPE DE VEGA 25, 45223',
-    'CALLE AMAPOLAS 18, 45224',
-    'CALLE CAMELIAS 12, 45224',
-    'CALLE ALMENDRO 9, 45224',
-    'CALLE LEPANTO 9, 45224',
-    'CALLE MADROÑO 7, 45224',
-    'CALLE MIRAFLORES 7, 45224',
-    'CALLE BARATARIA 7, 45224',
-    'CAMINO DE LOS PONTONES 7, 45224'
+    "PLAZA BAYONA 1, 45223",
+    "CALLE LOPE DE VEGA 25, 45223",
+    "CALLE AMAPOLAS 5, 45224",
+    "CALLE CAMELIAS 12, 45224",
+    "CALLE ALMENDRO 9, 45224",
+    "CALLE LEPANTO 9, 45224",
+    "CALLE MADROÑO 7, 45224",
+    "CALLE MIRAFLORES 7, 45224",
+    "CALLE BARATARIA 7, 45224",
+    "CAMINO DE LOS PONTONES 7, 45224"
   ];
 
   const sleep = (delay) => new Promise(resolve => setTimeout(resolve, delay));
@@ -79,7 +79,7 @@
       border: '1px solid #ccc',
       borderRadius: '4px',
       boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-      maxHeight: '220px',
+      maxHeight: '300px', // mayor altura para scroll
       overflowY: 'auto',
       zIndex: '1000',
       display: 'none',
@@ -103,7 +103,7 @@
       };
 
       optionItem.addEventListener('mousedown', selectOption);
-      optionItem.addEventListener('touchstart', selectOption);
+      optionItem.addEventListener('click', selectOption); // reemplaza touchstart para scroll
 
       optionItem.addEventListener('mouseenter', () => optionItem.style.background = '#eee');
       optionItem.addEventListener('mouseleave', () => optionItem.style.background = '#fff');
@@ -165,10 +165,7 @@
     // Paso 2 → Dirección inicio
     if (stepIndex === 2) {
       const domiInicioInput = document.getElementById('DOMI_INICIO');
-      if (
-        domiInicioInput &&
-        !domiInicioInput.dataset.autocompleteAttached
-      ) {
+      if (domiInicioInput && !domiInicioInput.dataset.autocompleteAttached) {
         initDomiInicioAutocomplete(domiInicioInput);
       }
     }
