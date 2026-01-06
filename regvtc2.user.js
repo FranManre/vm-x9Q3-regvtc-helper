@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Auto contrato (fecha, hora, matrícula y dirección)
+// @name         Auto contrato (fecha, hora, matrícula)
 // @namespace    https://github.com/FranManre/vm-x9Q3-regvtc-helper
-// @version      0.0.2
-// @description  Autocompleta matrícula, fecha, hora y dirección en REGVTC con scroll en móvil
+// @version      0.0.1
+// @description  Autocompleta matrícula, fecha, hora y dirección en REGVTC
 // @match        https://sede.transportes.gob.es/regvtc/gestion/*
 // @grant        none
 // @updateURL    https://raw.githubusercontent.com/FranManre/vm-x9Q3-regvtc-helper/main/regvtc.user.js
@@ -12,35 +12,42 @@
 (function () {
   'use strict';
 
+  /* ================= CONFIG ================= */
+
   const date = '03/03/2025';
   const hour = '12:00';
   const matricula = '7925-MYN';
+  const municipio = 'SESEÑA';
+  const municipioFull = 'SESEÑA (TOLEDO)';
   const delay = 500;
 
-  const domiInicioOptions = [
-    "PLAZA BAYONA 1, 45223",
-    "CALLE LOPE DE VEGA 25, 45223",
-    "CALLE AMAPOLAS 5, 45224",
-    "CALLE CAMELIAS 12, 45224",
-    "CALLE ALMENDRO 9, 45224",
-    "CALLE LEPANTO 9, 45224",
-    "CALLE MADROÑO 7, 45224",
-    "CALLE MIRAFLORES 7, 45224",
-    "CALLE BARATARIA 7, 45224",
-    "CAMINO DE LOS PONTONES 7, 45224"
+  const addresses = [
+    'PLAZA BAYONA 1, 45223',
+    'CALLE LOPE DE VEGA 25, 45223',
+    'CALLE AMAPOLAS 5, 45224',
+    'CALLE CAMELIAS 12, 45224',
+    'CALLE ALMENDRO 9, 45224',
+    'CALLE LEPANTO 9, 45224',
+    'CALLE MADROÑO 7, 45224',
+    'CALLE MIRAFLORES 7, 45224',
+    'CALLE BARATARIA 7, 45224',
+    'CAMINO DE LOS PONTONES 7, 45224'
   ];
 
-  const sleep = (delay) => new Promise(resolve => setTimeout(resolve, delay));
+  /* ================= UTILS ================= */
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
   const clickContinuar = () =>
     [...document.querySelectorAll('button')]
       .find(b => b.textContent.trim() === 'Continuar')
       ?.click();
 
   const eventTypes = ['input', 'keyup', 'change'];
+
   function dispatchAngularEvents(el) {
-    let ev;
     eventTypes.forEach(type => {
-      ev = document.createEvent('HTMLEvents');
+      const ev = document.createEvent('HTMLEvents');
       ev.initEvent(type, true, true);
       el.dispatchEvent(ev);
     });
@@ -53,24 +60,26 @@
     return true;
   }
 
+  /* ================= STEPS ================= */
+
   function getActiveStepIndex() {
     const steps = [...document.querySelectorAll('.mat-horizontal-stepper-content')];
-    if (!steps.length) return -1;
-    return steps.indexOf(steps.find(step => step.ariaExpanded === 'true'));
+    return steps.indexOf(steps.find(s => s.ariaExpanded === 'true'));
   }
 
-  /* ================= AUTOCOMPLETE DOMI_INICIO ================= */
+  function initAddressAutocomplete(input) {
+    if (!input || input._vmAutocompleteAttached) return;
+    input._vmAutocompleteAttached = true;
 
-  function initDomiInicioAutocomplete(domiInicioInput) {
-    const container = domiInicioInput.closest('.mat-form-field');
+    const container = input.closest('.mat-form-field');
     if (!container) return;
 
     container.style.position = 'relative';
 
-    const autocompleteBox = document.createElement('div');
-    autocompleteBox.className = 'vm-autocomplete-box';
+    const box = document.createElement('div');
+    box.className = 'vm-autocomplete-box';
 
-    Object.assign(autocompleteBox.style, {
+    Object.assign(box.style, {
       position: 'absolute',
       left: '0',
       right: '0',
@@ -79,63 +88,54 @@
       border: '1px solid #ccc',
       borderRadius: '4px',
       boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-      maxHeight: '300px', // mayor altura para scroll
+      maxHeight: '220px',
       overflowY: 'auto',
       zIndex: '1000',
+      fontSize: '16px',
       display: 'none',
-      fontSize: '16px'
+      touchAction: 'pan-y'
     });
 
-    domiInicioOptions.forEach(text => {
-      const optionItem = document.createElement('div');
-      optionItem.textContent = text;
+    addresses.forEach(text => {
+      const item = document.createElement('div');
+      item.textContent = text;
 
-      Object.assign(optionItem.style, {
+      Object.assign(item.style, {
         padding: '12px',
         cursor: 'pointer'
       });
 
-      const selectOption = (e) => {
-        e.preventDefault();
-        domiInicioInput.value = text;
-        dispatchAngularEvents(domiInicioInput);
-        autocompleteBox.style.display = 'none';
-      };
+      item.addEventListener('click', () => {
+        input.value = text;
+        dispatchAngularEvents(input);
+        box.style.display = 'none';
+      });
 
-      optionItem.addEventListener('mousedown', selectOption);
-      optionItem.addEventListener('click', selectOption); // reemplaza touchstart para scroll
+      item.addEventListener('mouseenter', () => item.style.background = '#eee');
+      item.addEventListener('mouseleave', () => item.style.background = '#fff');
 
-      optionItem.addEventListener('mouseenter', () => optionItem.style.background = '#eee');
-      optionItem.addEventListener('mouseleave', () => optionItem.style.background = '#fff');
-
-      autocompleteBox.appendChild(optionItem);
+      box.appendChild(item);
     });
 
-    container.appendChild(autocompleteBox);
+    container.appendChild(box);
 
-    domiInicioInput.addEventListener('focus', () => autocompleteBox.style.display = 'block');
-    domiInicioInput.addEventListener('click', () => autocompleteBox.style.display = 'block');
+    input.addEventListener('focus', () => box.style.display = 'block');
+    input.addEventListener('click', () => box.style.display = 'block');
 
     document.addEventListener('click', e => {
-      if (!container.contains(e.target)) {
-        autocompleteBox.style.display = 'none';
-      }
+      if (!container.contains(e.target)) box.style.display = 'none';
     });
-
-    domiInicioInput.dataset.autocompleteAttached = 'true';
   }
-
-  /* ================= LÓGICA PRINCIPAL ================= */
 
   async function processSteps() {
     let changed = false;
     const stepIndex = getActiveStepIndex();
     if (stepIndex === -1) return;
 
-    // Paso 0 → Matrícula
+    /* STEP 0 */
     if (stepIndex === 0) {
-      const matriculaInput = document.getElementById('desc_MATRICULA');
-      changed = setValueIfNeeded(matriculaInput, matricula);
+      const input = document.getElementById('desc_MATRICULA');
+      changed = setValueIfNeeded(input, matricula);
 
       if (changed) {
         await sleep(delay);
@@ -144,34 +144,77 @@
       return;
     }
 
-    // Paso 1 → Fecha / Hora
+    /* STEP 1 */
     if (stepIndex === 1) {
-      const dateInput = document.getElementById('F_CONTRATO_DATE');
-      const hourInput = document.getElementById('F_CONTRATO_HOUR');
-
-      changed = setValueIfNeeded(dateInput, date) || changed;
+      changed |= setValueIfNeeded(
+        document.getElementById('F_CONTRATO_DATE'),
+        date
+      );
       if (changed) await sleep(delay);
 
-      changed = setValueIfNeeded(hourInput, hour) || changed;
+      changed |= setValueIfNeeded(
+        document.getElementById('F_CONTRATO_HOUR'),
+        hour
+      );
       if (changed) {
-        await sleep(delay);
-        hourInput.focus();
         await sleep(delay);
         clickContinuar();
       }
       return;
     }
 
-    // Paso 2 → Dirección inicio
+    /* STEP 2 */
     if (stepIndex === 2) {
-      const domiInicioInput = document.getElementById('DOMI_INICIO');
-      if (domiInicioInput && !domiInicioInput.dataset.autocompleteAttached) {
-        initDomiInicioAutocomplete(domiInicioInput);
+      const addressInput = document.getElementById('DOMI_INICIO');
+      if (addressInput) initAddressAutocomplete(addressInput);
+
+      const muniInput = document.getElementById('desc_CG_MUNI_INICIO');
+      if (muniInput && muniInput.value !== municipio) {
+        muniInput.click();
+        await sleep(delay);
+        return;
+      }
+
+      const termInput = document.getElementById('term');
+      if (termInput && termInput.value !== municipioFull) {
+        termInput.value = municipioFull;
+        dispatchAngularEvents(termInput);
+        await sleep(delay);
+        document.querySelector('mat-list-item')?.click();
+        await sleep(delay);
       }
     }
   }
 
-  const observer = new MutationObserver(processSteps);
+  /* ================= MUTEX ASYNC ================= */
+
+  let isProcessing = false;
+  let pendingMutation = false;
+
+  async function processStepsSafe() {
+    if (isProcessing) {
+      pendingMutation = true;
+      return;
+    }
+
+    isProcessing = true;
+
+    try {
+      await processSteps();
+    } finally {
+      isProcessing = false;
+      if (pendingMutation) {
+        pendingMutation = false;
+        processStepsSafe();
+      }
+    }
+  }
+
+  /* ================= OBSERVER ================= */
+
+  const observer = new MutationObserver(() => {
+    processStepsSafe();
+  });
 
   observer.observe(document.body, {
     childList: true,
