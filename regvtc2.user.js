@@ -188,7 +188,7 @@
         if (muniInput && muniInput.value !== 'SESEÑA' && !municipioSelectorOpened) {
           municipioSelectorOpened = true;
           muniInput.click();
-          return;
+          await sleep(delay);
         }
 
         const termInput = document.getElementById('term');
@@ -198,7 +198,7 @@
           await sleep(delay);
           document.querySelector('mat-list-item')?.click();
           municipioSelected = true;
-          await sleep(delay);
+          await sleep(delay*2);
         }
         
         if (addressInput && addressInput.value === '') {
