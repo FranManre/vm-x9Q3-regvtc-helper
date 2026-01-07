@@ -223,5 +223,4 @@
     attributes: true,
     attributeFilter: ['aria-expanded']
   });
-
 })();
