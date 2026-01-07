@@ -169,6 +169,7 @@
 
         changed = setValueIfNeeded(hourInput, hour) || changed;
         if (changed) {
+          hourInput.focus();
           await sleep(delay);
           clickContinuar();
         }
